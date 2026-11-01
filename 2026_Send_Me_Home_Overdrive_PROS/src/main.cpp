@@ -1,7 +1,10 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 
+
+
 double track_width = 12.0; //placehold
+float wheel_diameter = lemlib::Omniwheel::NEW_325; //placehold :sob:
 int drive_rpm = 450;
 int horizontal_drift = 2;
 
@@ -9,12 +12,13 @@ int horizontal_drift = 2;
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
+//motor ports
 pros::MotorGroup left_mg({-1, -2, 3}, pros::MotorGearset::blue);
 pros::MotorGroup right_mg({4, 5, -6}, pros::MotorGearset::blue);
 
 lemlib::Drivetrain drivetrain(&left_mg,&right_mg,
 								track_width, //track width
-								lemlib::Omniwheel::NEW_325, //wheel type
+								wheel_diameter, //wheel type
 								drive_rpm,
 								horizontal_drift);
 
@@ -54,7 +58,7 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "sending you home");
-	chassis.calibrate();
+	//chassis.calibrate();
 	chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE); //resist movement when no joystick
 	pros::lcd::register_btn1_cb(on_center_button);
 }
