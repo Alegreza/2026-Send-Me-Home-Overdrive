@@ -1,4 +1,8 @@
 #include "main.h"
+#include "globals.h"
+#include "control.h"
+#include "lemlib/api.hpp" // IWYU pragma: keep
+#include "pros/misc.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -22,12 +26,36 @@ void on_center_button() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+// initialize function. Runs on program startup
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+    pros::lcd::initialize(); // initialize brain screen
+    inertial.reset(true);
+    inertial.tare();
+    while (inertial.is_calibrating()) {
+        pros::delay(10);
+        pros::lcd::print(0, "calibrating");
+    }
+    chassis.calibrate();
+    chassis.setPose({0,0,0});
+    
+    // optical.set_led_pwm(100); <--optical sensor (will be put in later)
+    pros::Task printPoseTask(Autonomous::constantlyPrintPose);  //multithreading: constantly print position, seperate from main code.*/
 
-	pros::lcd::register_btn1_cb(on_center_button);
+    // chassis.calibrate(); // calibrate sensors
+
+    // // print position to brain screen
+    // pros::Task screen_task([&]() {
+    //     while (true) {
+    //         // print robot location to the brain screen
+    //         pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
+    //         pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
+    //         pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+    //         // delay to save resources
+    //         pros::delay(20);
+    //     }
+    // });
 }
+
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -58,7 +86,12 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+    //Autonomous::init();
+    //Autonomous::tuneAngularPID();
+    //Autonomous::tuneLateralPID();
+    Autonomous::RedDriveMech();
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -75,20 +108,11 @@ void autonomous() {}
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({1, -2, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-	pros::MotorGroup right_mg({-4, 5, -6});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
-
+    matchload.set_value(true);
 
 	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
-
-		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		left_mg.move(dir - turn);                      // Sets left motor voltage
-		right_mg.move(dir + turn);                     // Sets right motor voltage
-		pros::delay(20);                               // Run for 20 ms then update
+        Control::opupdate();
+        // delay to save resources
+        pros::delay(25);
 	}
 }

@@ -1,3 +1,4 @@
+#pragma once
 /**
  * \file main.h
  *
@@ -35,6 +36,12 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
+#include "pros/apix.h"
+#include "lemlib/api.hpp"
+#include "autonomous.h"
+#include "globals.h"
+#include "control.h"
+#include "liblvgl/lvgl.h"
 
 /**
  * You should add more #includes here
