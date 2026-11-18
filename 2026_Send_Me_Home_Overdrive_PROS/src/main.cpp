@@ -14,7 +14,7 @@ void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
 	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
+		pros::lcd::set_text(2, "Center Button Pressed");
 	} else {
 		pros::lcd::clear_line(2);
 	}
@@ -37,6 +37,7 @@ void initialize() {
     }
     chassis.calibrate();
     chassis.setPose({0,0,0});
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD); //resist movement when no joystick
     
     // optical.set_led_pwm(100); <--optical sensor (will be put in later)
     pros::Task printPoseTask(Autonomous::constantlyPrintPose);  //multithreading: constantly print position, seperate from main code.*/

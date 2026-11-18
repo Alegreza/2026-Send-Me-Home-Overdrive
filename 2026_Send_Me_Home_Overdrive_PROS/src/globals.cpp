@@ -10,6 +10,7 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup leftDrive({-1, -2, -19}, pros::MotorGears::blue);
 pros::MotorGroup rightDrive({4, 5, 6}, pros::MotorGears::blue);
 
+//motor ports
 pros::Imu inertial(12);
 
 pros::Motor intake(7);
@@ -80,7 +81,5 @@ lemlib::ExpoDriveCurve steer_curve(3, // joystick deadband out of 127
 lemlib::Chassis chassis(drivetrain,
                         lateral_controller, 
                         angular_controller, 
-                        sensors, 
-                        &throttle_curve, 
-                        &steer_curve
+                        sensors
 );

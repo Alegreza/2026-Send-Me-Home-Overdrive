@@ -25,6 +25,9 @@ void Autonomous::init() {
     // chassis.setPose({0,0,0});
     // // optical.set_led_pwm(100); <--optical sensor (will be put in later)
     // pros::Task printPoseTask(Autonomous::constantlyPrintPose);  //multithreading: constantly print position, seperate from main code.*/
+
+    chassis.calibrate();
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 } 
 
 void Autonomous::IntakeMech() {
@@ -58,6 +61,7 @@ void Autonomous::tuneLateralPID() {
 }
 
 void Autonomous::RedDriveMech() {
+
     move(-1);
     pros::delay(50);
     stop();
@@ -108,9 +112,6 @@ void Autonomous::RedDriveMech() {
     // leftDrive.move_voltage(-60000);
     // rightDrive.move_voltage(-50000);
     // pros::delay(300);
-
-    leftDrive.move_voltage(0);
-    rightDrive.move_voltage(0);
 
 }
 
